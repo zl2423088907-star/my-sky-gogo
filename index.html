@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=f4f9b791-1db0-41ec-b55c-75942fa85fb2
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<title>我的导航</title>
+
+<!-- ================= 安全加固 (CSP) =================
+     限制脚本只能来自本页自身，禁止内联脚本执行，禁止被嵌套(防点击劫持)
+     注意：若你后续添加外部 CDN 脚本/字体，需要把域名加进下面的白名单 -->
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' https: data:; media-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'; object-src 'none';">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="theme-color" content="#0a0a1a">
+
+<style>
+  :root{
+    --bg-1:#0a0a1a;
+    --bg-2:#12002b;
+    --bg-3:#001a2c;
+    --accent:#00e5ff;
+    --accent-2:#a855f7;
+    --text:#eaf6ff;
+    --text-dim:#8fa3b8;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+
+  html,body{height:100%;}
+
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--text);
+    background:var(--bg-1);
+    min-height:100dvh;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:48px 20px 40px;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* ---------- 动态背景光斑 ---------- */
+  body::before,body::after{
+    content:"";
+    position:fixed;
+    border-radius:50%;
+    filter:blur(90px);
+    opacity:.55;
+    z-index:0;
+    pointer-events:none;
+  }
+  body::before{
+    width:60vmax;height:60vmax;
+    background:radial-gradient(circle,var(--accent),transparent 70%);
+    top:-20vmax;left:-20vmax;
+    animation:float1 18s ease-in-out infinite;
+  }
+  body::after{
+    width:55vmax;height:55vmax;
+    background:radial-gradient(circle,var(--accent-2),transparent 70%);
+    bottom:-20vmax;right:-15vmax;
+    animation:float2 22s ease-in-out infinite;
+  }
+
+  @keyframes float1{
+    0%,100%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(8vmax,6vmax) scale(1.15);}
+  }
+  @keyframes float2{
+    0%,100%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(-7vmax,-5vmax) scale(1.2);}
+  }
+
+  /* ---------- 主容器 ---------- */
+  .wrap{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:480px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:22px;
+  }
+
+  /* ---------- 头像 ---------- */
+  .avatar{
+    width:110px;height:110px;
+    border-radius:50%;
+    padding:4px;
+    background:conic-gradient(from 0deg,var(--accent),var(--accent-2),var(--accent));
+    animation:spin 6s linear infinite;
+    box-shadow:0 0 30px rgba(0,229,255,.45),0 0 60px rgba(168,85,247,.25);
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .avatar img{
+    width:100%;height:100%;
+    border-radius:50%;
+    object-fit:cover;
+    display:block;
+    background:linear-gradient(135deg,#141433,#1c0a3a);
+    animation:spin 6s linear infinite reverse; /* 抵掉外圈旋转，图不动 */
+  }
+
+  /* ---------- 昵称 & 简介 ---------- */
+  .nickname{
+    font-size:26px;
+    font-weight:800;
+    letter-spacing:.5px;
+    text-align:center;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2),var(--accent));
+    background-size:200% auto;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:shine 4s linear infinite;
+  }
+  @keyframes shine{to{background-position:200% center;}}
+
+  .bio{
+    font-size:14px;
+    line-height:1.7;
+    color:var(--text-dim);
+    text-align:center;
+    padding:0 6px;
+    max-width:400px;
+  }
+
+  /* ---------- 链接按钮 ---------- */
+  .links{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    margin-top:6px;
+  }
+
+  .link-btn{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    width:100%;
+    padding:16px 20px;
+    border-radius:16px;
+    text-decoration:none;
+    color:var(--text);
+    font-size:16px;
+    font-weight:600;
+    position:relative;
+    overflow:hidden;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    transition:transform .22s cubic-bezier(.34,1.56,.64,1),
+               border-color .25s, box-shadow .25s, background .25s;
+  }
+
+  /* 扫光 */
+  .link-btn::after{
+    content:"";
+    position:absolute;
+    top:0;left:-120%;
+    width:60%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+    transform:skewX(-20deg);
+    transition:left .6s ease;
+  }
+  .link-btn:hover::after{left:130%;}
+
+  .link-btn:active{transform:scale(.97);}
+  .link-btn:hover{
+    transform:translateY(-3px);
+    border-color:var(--accent);
+    background:rgba(0,229,255,.10);
+    box-shadow:0 8px 30px rgba(0,229,255,.28),
+               inset 0 0 20px rgba(0,229,255,.08);
+  }
+
+  .link-btn .ico{
+    flex:0 0 26px;
+    height:26px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;
+  }
+
+  .link-btn .label{flex:1;text-align:left;}
+
+  .link-btn .arrow{
+    flex:0 0 auto;
+    color:var(--text-dim);
+    font-size:18px;
+    transition:transform .25s,color .25s;
+  }
+  .link-btn:hover .arrow{transform:translateX(5px);color:var(--accent);}
+
+  /* ---------- 底部 ---------- */
+  .footer{
+    margin-top:16px;
+    font-size:12px;
+    color:var(--text-dim);
+    text-align:center;
+    opacity:.75;
+  }
+  .footer a{color:var(--accent);text-decoration:none;}
+
+  /* 入场动画 */
+  .fade{
+    opacity:0;
+    transform:translateY(18px);
+    animation:fadeUp .7s forwards;
+  }
+  @keyframes fadeUp{to{opacity:1;transform:none;}}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;}
+  }
+
+  /* ---------- 背景音乐按钮 ---------- */
+  .bgm-btn{
+    position:fixed;
+    top:16px;right:16px;
+    z-index:9999;
+    width:46px;height:46px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;line-height:1;
+    color:var(--text);
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.22);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    cursor:pointer;
+    transition:transform .2s,background .25s,border-color .25s,box-shadow .25s;
+  }
+  .bgm-btn:hover{
+    border-color:var(--accent);
+    background:rgba(0,229,255,.14);
+    box-shadow:0 6px 22px rgba(0,229,255,.30);
+  }
+  .bgm-btn:active{transform:scale(.92);}
+
+  /* 播放中：图标旋转 + 呼吸光圈 */
+  .bgm-btn.playing .bgm-note{
+    animation:bgmSpin 3.2s linear infinite;
+    color:var(--accent);
+  }
+  @keyframes bgmSpin{to{transform:rotate(360deg);}}
+
+  .bgm-btn.playing::after{
+    content:"";
+    position:absolute;inset:-4px;
+    border-radius:50%;
+    border:1px solid var(--accent);
+    opacity:.7;
+    animation:bgmPulse 1.8s ease-out infinite;
+  }
+  @keyframes bgmPulse{
+    0%{transform:scale(.9);opacity:.7;}
+    100%{transform:scale(1.35);opacity:0;}
+  }
+
+  /* 被浏览器拦截自动播放时：轻微提示 */
+  .bgm-btn.blocked{
+    animation:bgmHint 2.2s ease-in-out infinite;
+  }
+  @keyframes bgmHint{
+    0%,100%{box-shadow:0 0 0 0 rgba(0,229,255,0);}
+    50%{box-shadow:0 0 0 8px rgba(0,229,255,.18);}
+  }
+
+  /* ---------- 背景层（置底：永远压在所有内容之下） ---------- */
+  /* 整层用负 z-index 垫底 + isolation 建立独立层叠上下文，
+     这样无论后面再加什么组件，背景都不会盖到内容上。 */
+  .bg-layer{
+    position:fixed;
+    inset:0;
+    z-index:-1;                /* 负层级 == 页面最底层 */
+    isolation:isolate;         /* 内部再分层，不干扰外部 */
+    overflow:hidden;
+    pointer-events:none;       /* 整层不接收任何点击/长按/拖拽 */
+    background:transparent;
+  }
+
+  /* 背景视频：铺满整层，保持比例不裁切 */
+  .bg-video{
+    position:absolute;
+    inset:0;
+    z-index:0;                 /* 本层最底 */
+    width:100%;
+    height:100%;
+    object-fit:contain;        /* 完整显示整个视频，不裁切，空余处留黑边 */
+    background:#000;           /* 留黑边（改黑，避免露出主题底色） */
+    pointer-events:none;       /* 不可点 → 不触发全屏/小窗/播放控件 */
+    -webkit-user-select:none;
+    user-select:none;
+    -webkit-touch-callout:none;/* 长按不弹“存储视频”菜单 */
+    -webkit-user-drag:none;
+  }
+
+  /* 视频上盖一层暗色遮罩，保证文字可读（仍在背景层内） */
+  .bg-mask{
+    position:absolute;
+    inset:0;
+    z-index:1;                 /* 在视频之上，但仍被 .bg-layer 压在最底 */
+    pointer-events:none;
+    background:linear-gradient(180deg,
+      rgba(10,10,26,.45) 0%,
+      rgba(10,10,26,.30) 45%,
+      rgba(10,10,26,.60) 100%);
+  }
+
+  /* 有视频背景时，去掉原来的动态光斑背景，避免打架 */
+  body.has-video::before,
+  body.has-video::after{display:none;}
+  body.has-video{background:transparent;}
+
+  /* 兜底：极少数浏览器会给 video 加浮动小窗按钮，直接隐藏 */
+  .bg-video::-webkit-media-controls,
+  .bg-video::-webkit-media-controls-enclosure,
+  .bg-video::-webkit-media-controls-overlay-play-button,
+  .bg-video::-webkit-media-controls-picture-in-picture-button{display:none!important;}
+</style>
+</head>
+<body>
+
+<!-- ============ 背景层：置底 + 不可交互 + 防嗅探 ============
+     1) 整层 z-index:-1，压在页面所有内容之下
+     2) 视频不再写死 src（由 app.js 用 fetch→Blob 注入），
+        DOM 里不暴露 .mp4 直链，浏览器插件/下载器扫不到可下载地址
+     3) disablepictureinpicture / disableremoteplayback + 无 controls，
+        彻底关掉小窗(PiP)、投屏和原生播放控件
+     ======================================================== -->
+<div class="bg-layer" aria-hidden="true">
+  <video class="bg-video" id="bgVideo"
+         autoplay muted loop playsinline webkit-playsinline
+         preload="auto"
+         disablepictureinpicture disableremoteplayback
+         controlslist="nodownload nofullscreen noplaybackrate noremoteplayback"
+         x-webkit-airplay="deny"
+         aria-hidden="true"></video>
+  <div class="bg-mask" aria-hidden="true"></div>
+</div>
+
+<div class="wrap" id="app"></div>
+
+<!-- 背景音乐播放按钮（自动尝试播放，被浏览器拦截时显示为可点击按钮） -->
+<button id="bgmBtn" class="bgm-btn" type="button" aria-label="背景音乐" title="点击播放/暂停背景音乐">
+  <span class="bgm-note">♪</span>
+</button>
+
+<!-- ================= 配置区（你只改这里！） =================
+     所有模块都在下面的 modules 数组里，顺序 = 页面显示顺序。
+     想删某个模块就删掉那一段，想加就复制一段改内容。
+     支持的模块类型（type）：
+       "avatar"   头像      —— src: 图片路径(可空)
+       "nickname" 昵称      —— text: 文字
+       "bio"      自定义简介 —— text: 文字(用 \n 换行)
+       "links"    链接列表   —— items: [{icon,label,url}, ...]
+       "footer"   底部文字   —— text: 文字
+
+     背景音乐：改下面的 "music" 字段
+       "src"   音乐文件路径或直链（把音乐文件命名为 bgm.mp3 放同目录即可）
+                不想放音乐，就把它留空 "" 或整段删掉
+       "volume" 音量 0~1（默认 0.5）
+       "loop"   是否循环（true/false）
+      =============================================================== -->
+<script id="config" type="application/json">
+{
+  "music": {
+    "src": "hzw.mp3",
+    "volume": 0.5,
+    "loop": true
+  },
+  "modules": [
+    { "type": "avatar",   "src": "avatar.png" },
+    { "type": "bio",      "text": "收藏网址更新就回来重新下，不懂联系我" },
+    { "type": "links",    "items": [
+        { "icon": "💬", "label": "有问题点这里找我，其他地方不回复", "url": "https://qm.qq.com/cgi-bin/qm/qr?k=2423088907&jump_from=webapi&authKey=", "qq": "2423088907" },
+        { "icon": "🍀", "label": "移动网盘", "url": "https://yun.139.com/shareweb/#/w/i/2wFGp04cdBkif" },
+        { "icon": "🌿", "label": "纯免费网盘不限速下载工具",   "url": "https://xz.yodlx.com/"}
+    ]}
+  ]
+}
+</script>
+
+<!-- ================= 渲染逻辑（一般不用改） ================= -->
+<script src="app.js"></script>
+
+</body>
+</html>
